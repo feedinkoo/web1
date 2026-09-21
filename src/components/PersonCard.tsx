@@ -1,3 +1,4 @@
+import React from 'react';
 import { MapPin, Briefcase, Users, ThumbsUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Person } from '../data/types';

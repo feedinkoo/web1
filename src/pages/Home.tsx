@@ -1,3 +1,4 @@
+import React from 'react';
 import Hero from '../components/Hero';
 import JobCard from '../components/JobCard';
 import PersonCard from '../components/PersonCard';

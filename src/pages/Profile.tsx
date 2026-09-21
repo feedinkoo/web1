@@ -1,3 +1,4 @@
+import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { MapPin, Briefcase, Users, ThumbsUp, ArrowLeft, GraduationCap, Mail, ExternalLink } from 'lucide-react';
 import { people } from '../data/people';
