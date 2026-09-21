@@ -1,3 +1,4 @@
+import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { MapPin, Clock, DollarSign, Briefcase, ArrowLeft, CheckCircle, Zap, Building } from 'lucide-react';
 import { jobs } from '../data/jobs';

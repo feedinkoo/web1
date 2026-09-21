@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Briefcase, MapPin, DollarSign, FileText, CheckCircle } from 'lucide-react';
 import { categories, jobTypes } from '../data/jobs';
 

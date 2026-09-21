@@ -1,3 +1,4 @@
+import React from 'react';
 import { MapPin, Clock, DollarSign, Briefcase, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Job } from '../data/types';
