@@ -1,16 +1,26 @@
-import { useState, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Search, MapPin, Filter, X } from 'lucide-react';
 import PersonCard from '../components/PersonCard';
 import { people, skillFilters } from '../data/people';
 
 export default function People() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [keyword, setKeyword] = useState(searchParams.get('q') || '');
-  const [location, setLocation] = useState(searchParams.get('location') || '');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const params = new URLSearchParams(location.search);
+
+  const [keyword, setKeyword] = useState(params.get('q') || '');
+  const [locationFilter, setLocationFilter] = useState(params.get('location') || '');
   const [selectedSkill, setSelectedSkill] = useState('All');
   const [openToWorkOnly, setOpenToWorkOnly] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+
+  useEffect(() => {
+    const q = params.get('q') || '';
+    const loc = params.get('location') || '';
+    setKeyword(q);
+    setLocationFilter(loc);
+  }, [location.search]);
 
   const filteredPeople = useMemo(() => {
     return people.filter((person) => {
@@ -22,23 +32,23 @@ export default function People() {
         person.skills.some((s) => s.toLowerCase().includes(keyword.toLowerCase())) ||
         person.bio.toLowerCase().includes(keyword.toLowerCase());
       const matchesLocation =
-        !location || person.location.toLowerCase().includes(location.toLowerCase());
+        !locationFilter || person.location.toLowerCase().includes(locationFilter.toLowerCase());
       const matchesSkill =
         selectedSkill === 'All' || person.skills.includes(selectedSkill);
       const matchesOpenToWork = !openToWorkOnly || person.openToWork;
       return matchesKeyword && matchesLocation && matchesSkill && matchesOpenToWork;
     });
-  }, [keyword, location, selectedSkill, openToWorkOnly]);
+  }, [keyword, locationFilter, selectedSkill, openToWorkOnly]);
 
   const clearFilters = () => {
     setKeyword('');
-    setLocation('');
+    setLocationFilter('');
     setSelectedSkill('All');
     setOpenToWorkOnly(false);
-    setSearchParams({});
+    navigate('/people');
   };
 
-  const hasActiveFilters = keyword || location || selectedSkill !== 'All' || openToWorkOnly;
+  const hasActiveFilters = keyword || locationFilter || selectedSkill !== 'All' || openToWorkOnly;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -63,8 +73,8 @@ export default function People() {
               <input
                 type="text"
                 placeholder="Location..."
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                value={locationFilter}
+                onChange={(e) => setLocationFilter(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
               />
             </div>

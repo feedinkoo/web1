@@ -1,16 +1,26 @@
-import { useState, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Search, MapPin, Filter, X } from 'lucide-react';
 import JobCard from '../components/JobCard';
 import { jobs, categories, jobTypes } from '../data/jobs';
 
 export default function Jobs() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [keyword, setKeyword] = useState(searchParams.get('q') || '');
-  const [location, setLocation] = useState(searchParams.get('location') || '');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const params = new URLSearchParams(location.search);
+
+  const [keyword, setKeyword] = useState(params.get('q') || '');
+  const [locationFilter, setLocationFilter] = useState(params.get('location') || '');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedType, setSelectedType] = useState('All');
   const [showFilters, setShowFilters] = useState(false);
+
+  useEffect(() => {
+    const q = params.get('q') || '';
+    const loc = params.get('location') || '';
+    setKeyword(q);
+    setLocationFilter(loc);
+  }, [location.search]);
 
   const filteredJobs = useMemo(() => {
     return jobs.filter((job) => {
@@ -21,22 +31,22 @@ export default function Jobs() {
         job.description.toLowerCase().includes(keyword.toLowerCase()) ||
         job.category.toLowerCase().includes(keyword.toLowerCase());
       const matchesLocation =
-        !location || job.location.toLowerCase().includes(location.toLowerCase());
+        !locationFilter || job.location.toLowerCase().includes(locationFilter.toLowerCase());
       const matchesCategory = selectedCategory === 'All' || job.category === selectedCategory;
       const matchesType = selectedType === 'All' || job.type === selectedType;
       return matchesKeyword && matchesLocation && matchesCategory && matchesType;
     });
-  }, [keyword, location, selectedCategory, selectedType]);
+  }, [keyword, locationFilter, selectedCategory, selectedType]);
 
   const clearFilters = () => {
     setKeyword('');
-    setLocation('');
+    setLocationFilter('');
     setSelectedCategory('All');
     setSelectedType('All');
-    setSearchParams({});
+    navigate('/jobs');
   };
 
-  const hasActiveFilters = keyword || location || selectedCategory !== 'All' || selectedType !== 'All';
+  const hasActiveFilters = keyword || locationFilter || selectedCategory !== 'All' || selectedType !== 'All';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -60,8 +70,8 @@ export default function Jobs() {
               <input
                 type="text"
                 placeholder="Location..."
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                value={locationFilter}
+                onChange={(e) => setLocationFilter(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               />
             </div>
